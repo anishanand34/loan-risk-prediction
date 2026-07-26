@@ -1,0 +1,202 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================= */
+/* GLOBAL / UTIL STYLES */
+/* ========================= */
+body {
+  background-color: black;
+  margin: 0;
+}
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* ========================= */
+/* FORM STYLES */
+/* ========================= */
+
+.auth-form input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.auth-form input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.auth-form button:hover {
+  background: #1e40af;
+}
+
+/* ========================= */
+/* FOOTER */
+/* ========================= */
+
+.auth-footer {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.auth-footer a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ========================= */
+/* MAIN LAYOUT */
+/* ========================= */
+
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* LEFT SIDE */
+
+.auth-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 35%),
+    linear-gradient(135deg, #eef4ff, #f8fafc);
+}
+
+.auth-left-content {
+  max-width: 500px;
+}
+
+.auth-left h1 {
+  font-size: 52px;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+.auth-left p {
+  font-size: 18px;
+  color: #475569;
+}
+
+/* RIGHT SIDE */
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8fafc;
+}
+
+/* CARD */
+
+.auth-card {
+  width: 420px;
+  background: white;
+  padding: 36px;
+  border-radius: 28px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+  border: 1px solid #e5e7eb;
+}
+
+/* TITLE */
+
+.auth-title {
+  margin-bottom: 16px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 900px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-left {
+    display: none;
+  }
+
+  .auth-right {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+.export-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  background: #1e40af;
+}
+.delete-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
