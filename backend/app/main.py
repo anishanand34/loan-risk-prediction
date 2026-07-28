@@ -11,7 +11,6 @@ from app.ml_model import predict_loan_risk
 app = FastAPI()
 
 app.add_middleware(
-
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -45,13 +44,15 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return {
-    "message": "User created successfully",
-    "user": {
-        "id": new_user.id,
-        "name": new_user.name,
-        "email": new_user.email
+        "message": "User created successfully",
+        "user": {
+            "id": new_user.id,
+            "name": new_user.name,
+            "email": new_user.email
+        }
     }
-}
+
+
 @app.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
@@ -81,7 +82,8 @@ def predict_loan(request: LoanInput, db: Session = Depends(get_db)):
 
     ml_result = predict_loan_risk(
         request.income,
-        request.loan_amount
+        request.loan_amount,
+        request.cibil_score
     )
 
     new_prediction = Prediction(
@@ -169,31 +171,13 @@ def health_check():
     return {"status": "healthy", "message": "LoanWise backend is running"}
 
 
-
-@app.delete("/prediction/{prediction_id}")
-def delete_prediction(prediction_id: int, db: Session = Depends(get_db)):
-    prediction = db.query(Prediction).filter(Prediction.id == prediction_id).first()
-
-    if not prediction:
-        raise HTTPException(status_code=404, detail="Prediction not found")
-
-    db.delete(prediction)
-    db.commit()
-
-    return {"message": "Prediction deleted successfully"}
-@app.get("/health")
-def health_check():
-    return {
-        "status": "healthy",
-        "message": "LoanWise backend is running"
-    }
 @app.get("/model-info")
 def model_info():
     return {
         "model_name": "Logistic Regression",
         "model_version": "1.0",
         "accuracy": 0.6276,
-        "features": ["income", "loan_amount", "loan_to_income"],
+        "features": ["income", "loan_amount", "loan_to_income", "cibil_score"],
         "target": "risk_level",
         "dataset": "Loan Approval Prediction Dataset",
         "report_file": "model_report.txt"

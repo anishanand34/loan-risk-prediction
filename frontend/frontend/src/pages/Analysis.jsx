@@ -23,6 +23,7 @@ const Analysis = () => {
 
   const [income, setIncome] = useState("");
   const [loan, setLoan] = useState("");
+  const [cibilScore, setCibilScore] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
@@ -48,6 +49,7 @@ const Analysis = () => {
         user_id: actualUser.id,
         income: Number(income),
         loan_amount: Number(loan),
+        cibil_score: Number(cibilScore),
       });
 
       setResult(res.data);
@@ -126,6 +128,22 @@ const Analysis = () => {
                   placeholder="e.g. 25000"
                   required
                   min="1"
+                  className="w-full bg-black/50 border border-white/5 rounded-xl py-4 px-5 text-white outline-none focus:border-[#DC143C]/50 focus:ring-1 focus:ring-[#DC143C]/20 transition-all"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                  CIBIL Score
+                </label>
+                <input
+                  type="number"
+                  value={cibilScore}
+                  onChange={(e) => setCibilScore(e.target.value)}
+                  placeholder="e.g. 720"
+                  required
+                  min="300"
+                  max="900"
                   className="w-full bg-black/50 border border-white/5 rounded-xl py-4 px-5 text-white outline-none focus:border-[#DC143C]/50 focus:ring-1 focus:ring-[#DC143C]/20 transition-all"
                 />
               </div>

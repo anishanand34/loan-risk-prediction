@@ -23,25 +23,38 @@ print("Columns found:", df.columns.tolist())
 df["loan_status"] = df["loan_status"].astype(str).str.strip()
 
 # Keep only needed columns
-df = df[["income_annum", "loan_amount", "loan_status"]].dropna()
+df = df[["income_annum", "loan_amount", "loan_status", "cibil_score"]].dropna()
 
 # Rename for our app
 df = df.rename(columns={
     "income_annum": "income"
 })
 
-# Feature engineering
+# Feature engineering — must happen BEFORE assign_risk, since it uses loan_to_income
 df["loan_to_income"] = df["loan_amount"] / df["income"]
 
-# Target mapping
-df["risk"] = df["loan_status"].map({
-    "Approved": 0,
-    "Rejected": 2
-})
+# Target mapping: 3 real risk classes based on approval status, credit score, AND loan burden
+def assign_risk(row):
+    if row["loan_status"] == "Rejected":
+        return 2  # High Risk
 
-df = df.dropna(subset=["risk"])
+    # Approved cases — score based on both credit score and debt burden
+    risk_score = 0
+    if row["cibil_score"] < 700:
+        risk_score += 1
+    if row["loan_to_income"] >= 0.5:
+        risk_score += 1
 
-X = df[["income", "loan_amount", "loan_to_income"]]
+    if risk_score == 0:
+        return 0  # Low Risk
+    elif risk_score == 1:
+        return 1  # Medium Risk
+    else:
+        return 2  # High Risk (approved, but both signals are bad)
+
+df["risk"] = df.apply(assign_risk, axis=1)
+
+X = df[["income", "loan_amount", "loan_to_income", "cibil_score"]]
 y = df["risk"]
 
 X_train, X_test, y_train, y_test = train_test_split(

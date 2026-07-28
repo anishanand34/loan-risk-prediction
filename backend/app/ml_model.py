@@ -15,7 +15,7 @@ risk_map = {
     2: "High Risk"
 }
 
-def predict_loan_risk(income, loan_amount):
+def predict_loan_risk(income, loan_amount, cibil_score):
     loan_to_income = loan_amount / income
 
     # Business rule override for obvious cases
@@ -41,7 +41,8 @@ def predict_loan_risk(income, loan_amount):
     input_data = pd.DataFrame([{
         "income": income,
         "loan_amount": loan_amount,
-        "loan_to_income": loan_to_income
+        "loan_to_income": loan_to_income,
+        "cibil_score": cibil_score
     }])
 
     prediction = model.predict(input_data)[0]

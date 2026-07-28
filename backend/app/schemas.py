@@ -10,10 +10,7 @@ class UserLogin(BaseModel):
     password: str
 
 class LoanInput(BaseModel):
-    income: float
-    loan_amount: float
-
-class LoanInput(BaseModel):
     user_id: int
     income: float
     loan_amount: float
+    cibil_score: int

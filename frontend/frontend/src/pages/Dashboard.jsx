@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   ShieldCheck,
@@ -7,6 +8,7 @@ import {
   AlertCircle,
   ArrowUpRight,
   LayoutDashboard,
+  ArrowLeft,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -14,6 +16,7 @@ const Dashboard = () => {
   const [history, setHistory] = useState([]);
   const [user, setUser] = useState(null);
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -125,6 +128,7 @@ const Dashboard = () => {
         {/* HEADER */}
         <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-5 mb-10">
           <div>
+        
             <h1 className="text-3xl md:text-4xl font-black text-white uppercase italic tracking-tight">
               Welcome back, {user?.name?.toUpperCase() || "USER"}
             </h1>
@@ -138,6 +142,13 @@ const Dashboard = () => {
           </div>
 
           <div className="flex gap-3">
+            <button
+              onClick={() => navigate("/analysis")}
+              className="flex items-center gap-2 px-5 py-3 bg-white/[0.05] border border-white/20 rounded-xl text-xs text-white hover:bg-white/10 transition"
+            >
+              <ArrowLeft size={14} /> Back to Analysis
+            </button>
+
             <button
               onClick={exportCSV}
               className="flex items-center gap-2 px-5 py-3 bg-white/[0.05] border border-white/20 rounded-xl text-xs text-white hover:bg-white/10 transition"
