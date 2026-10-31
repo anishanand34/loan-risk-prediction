@@ -1,67 +1,85 @@
 import os
+import json
 import joblib
 import pandas as pd
 
 BASE_DIR = os.path.dirname(__file__)
-model_path = os.path.join(BASE_DIR, "loan_model.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "loan_model.pkl")
+META_PATH = os.path.join(BASE_DIR, "model_meta.json")
 
-model = joblib.load(model_path)
+FEATURES = ["income", "loan_amount", "loan_to_income", "cibil_score"]
 
-MODEL_VERSION = "1.0"
+model = joblib.load(MODEL_PATH)
 
 risk_map = {
     0: "Low Risk",
     1: "Medium Risk",
-    2: "High Risk"
+    2: "High Risk",
 }
 
-def predict_loan_risk(income, loan_amount, cibil_score):
+
+def _load_meta():
+    default = {
+        "model_name": "Unknown",
+        "model_version": "1.0",
+        "accuracy": None,
+        "features": FEATURES,
+        "target": "risk_level",
+        "dataset": "Loan Approval Prediction Dataset",
+        "report_file": "model_report.txt",
+    }
+    try:
+        with open(META_PATH, "r") as f:
+            default.update(json.load(f))
+    except FileNotFoundError:
+        pass
+    return default
+
+
+# Written by train_model.py, so /model-info always matches the saved model
+MODEL_META = _load_meta()
+MODEL_VERSION = f'{MODEL_META["model_name"]} v{MODEL_META["model_version"]}'
+
+
+def predict_loan_risk(income: float, loan_amount: float, cibil_score: int):
+    if income <= 0:
+        raise ValueError("Income must be greater than 0")
+    if loan_amount <= 0:
+        raise ValueError("Loan amount must be greater than 0")
+
     loan_to_income = loan_amount / income
 
-    # Business rule override for obvious cases
-    if loan_to_income < 0.3:
-        return {
-            "loan_to_income": round(loan_to_income, 2),
-            "risk_level": "Low Risk",
-            "confidence": 95.0,
-            "recommendation": "Loan looks safe based on income and borrowing amount.",
-            "model_version": "hybrid_1.0"
-        }
-
-    if loan_to_income > 0.8:
-        return {
-            "loan_to_income": round(loan_to_income, 2),
-            "risk_level": "High Risk",
-            "confidence": 92.0,
-            "recommendation": "Loan is risky due to high loan amount compared to income.",
-            "model_version": "hybrid_1.0"
-        }
-
-    # ML model for middle cases
+    # Column names and order must match training exactly
     input_data = pd.DataFrame([{
         "income": income,
         "loan_amount": loan_amount,
         "loan_to_income": loan_to_income,
-        "cibil_score": cibil_score
-    }])
+        "cibil_score": cibil_score,
+    }])[FEATURES]
 
-    prediction = model.predict(input_data)[0]
+    prediction = int(model.predict(input_data)[0])
     probabilities = model.predict_proba(input_data)[0]
-    confidence = max(probabilities) * 100
+
+    # Probability the model assigns to the class it predicted (a real model output)
+    class_index = list(model.classes_).index(prediction)
+    confidence = float(probabilities[class_index]) * 100
 
     risk_level = risk_map[prediction]
 
     if risk_level == "Low Risk":
-        recommendation = "Loan looks safe based on income and borrowing amount."
+        recommendation = "Loan looks safe based on income, borrowing amount and credit score."
     elif risk_level == "Medium Risk":
         recommendation = "Loan may be manageable, but repayment capacity should be reviewed."
     else:
-        recommendation = "Loan is risky due to high loan amount compared to income."
+        recommendation = "Loan is risky based on the loan amount relative to income and credit profile."
+
+    if cibil_score < 650 and risk_level != "High Risk":
+        recommendation += " A low credit score may still reduce approval chances."
 
     return {
         "loan_to_income": round(loan_to_income, 2),
         "risk_level": risk_level,
         "confidence": round(confidence, 2),
         "recommendation": recommendation,
-        "model_version": "hybrid_1.0"
+        "model_version": MODEL_VERSION,
     }

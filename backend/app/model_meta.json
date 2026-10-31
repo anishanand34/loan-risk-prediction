@@ -1,0 +1,16 @@
+{
+  "model_name": "Random Forest",
+  "model_version": "3.0",
+  "accuracy": 0.9871,
+  "features": [
+    "income",
+    "loan_amount",
+    "loan_to_income",
+    "cibil_score"
+  ],
+  "target": "risk_level",
+  "dataset": "Loan Approval Prediction Dataset",
+  "report_file": "model_report.txt",
+  "heavy_loan_to_income_threshold": 3.348,
+  "label_rules": "Rejected = High; otherwise +1 if cibil < 700, +1 if loan_to_income >= heavy threshold (0 Low, 1 Medium, 2 High)"
+}

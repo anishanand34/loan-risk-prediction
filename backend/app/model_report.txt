@@ -1,37 +1,44 @@
 
 Model: Logistic Regression
-Accuracy: 0.9379
+Accuracy: 0.8361
 Classification Report:
               precision    recall  f1-score   support
 
-           1       0.90      0.92      0.91       289
-           2       0.96      0.95      0.95       565
+           0       0.81      0.87      0.84       194
+           1       0.69      0.75      0.72       239
+           2       0.94      0.87      0.90       421
 
-    accuracy                           0.94       854
-   macro avg       0.93      0.93      0.93       854
-weighted avg       0.94      0.94      0.94       854
+    accuracy                           0.84       854
+   macro avg       0.82      0.83      0.82       854
+weighted avg       0.84      0.84      0.84       854
 
 Confusion Matrix:
-[[266  23]
- [ 30 535]]
+[[169  25   0]
+ [ 38 179  22]
+ [  1  54 366]]
 ==================================================
 
 Model: Random Forest
-Accuracy: 1.0000
+Accuracy: 0.9871
 Classification Report:
               precision    recall  f1-score   support
 
-           1       1.00      1.00      1.00       289
-           2       1.00      1.00      1.00       565
+           0       0.99      1.00      1.00       194
+           1       1.00      0.96      0.98       239
+           2       0.98      1.00      0.99       421
 
-    accuracy                           1.00       854
-   macro avg       1.00      1.00      1.00       854
-weighted avg       1.00      1.00      1.00       854
+    accuracy                           0.99       854
+   macro avg       0.99      0.99      0.99       854
+weighted avg       0.99      0.99      0.99       854
 
 Confusion Matrix:
-[[289   0]
- [  0 565]]
+[[194   0   0]
+ [  0 230   9]
+ [  1   1 419]]
 ==================================================
 
+Feature influence (Random Forest):
+{'income': 0.008, 'loan_amount': 0.02, 'loan_to_income': 0.247, 'cibil_score': 0.726}
+
 Best Model: Random Forest
-Best Accuracy: 1.0000
+Best Accuracy: 0.9871
