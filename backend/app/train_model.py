@@ -16,7 +16,7 @@ MODEL_PATH = os.path.join(BASE_DIR, "loan_model.pkl")
 REPORT_PATH = os.path.join(BASE_DIR, "model_report.txt")
 META_PATH = os.path.join(BASE_DIR, "model_meta.json")
 
-MODEL_VERSION = "3.0"
+MODEL_VERSION = "3.1"
 FEATURES = ["income", "loan_amount", "loan_to_income", "cibil_score"]
 
 df = pd.read_csv(DATA_PATH)
@@ -48,7 +48,10 @@ print(df["loan_to_income"].describe())
 # Low Risk class ends up nearly empty. Use a dataset-relative threshold instead:
 # the top third of loan-to-income values counts as a heavy burden.
 LTI_HEAVY = float(df["loan_to_income"].quantile(0.67))
+# An extreme burden (top 10%) is High Risk on its own, whatever the CIBIL score
+LTI_VERY_HEAVY = float(df["loan_to_income"].quantile(0.90))
 print(f"\nHeavy-burden loan-to-income threshold (67th percentile): {LTI_HEAVY:.3f}")
+print(f"Very-heavy-burden threshold (90th percentile): {LTI_VERY_HEAVY:.3f}")
 
 
 # Target mapping: 3 risk classes from approval status, credit score AND loan burden
@@ -59,10 +62,12 @@ def assign_risk(row):
     risk_score = 0
     if row["cibil_score"] < 700:
         risk_score += 1
-    if row["loan_to_income"] >= LTI_HEAVY:
+    if row["loan_to_income"] >= LTI_VERY_HEAVY:
+        risk_score += 2  # extreme loan burden = High Risk on its own
+    elif row["loan_to_income"] >= LTI_HEAVY:
         risk_score += 1
 
-    return risk_score  # 0 = Low, 1 = Medium, 2 = High (both signals bad)
+    return min(risk_score, 2)  # 0 = Low, 1 = Medium, 2 = High
 
 
 df["risk"] = df.apply(assign_risk, axis=1)
@@ -134,6 +139,7 @@ print("\nFeature influence:", importances)
 # ---- Sensitivity test: low / typical / high loan burden x different CIBIL scores ----
 print("\nSensitivity (income fixed at 5,000,000). Format: class (max probability)")
 lti_points = df["loan_to_income"].quantile([0.05, 0.5, 0.95]).tolist()
+lti_points.append(float(df["loan_to_income"].max()) * 20)  # far outside the training range
 for lti in lti_points:
     print(f"\n  loan_to_income = {lti:.2f}")
     for score in (300, 500, 600, 700, 800, 900):
@@ -166,7 +172,9 @@ with open(META_PATH, "w") as f:
         "dataset": "Loan Approval Prediction Dataset",
         "report_file": "model_report.txt",
         "heavy_loan_to_income_threshold": round(LTI_HEAVY, 3),
-        "label_rules": "Rejected = High; otherwise +1 if cibil < 700, +1 if loan_to_income >= heavy threshold (0 Low, 1 Medium, 2 High)",
+        "very_heavy_loan_to_income_threshold": round(LTI_VERY_HEAVY, 3),
+        "feature_ranges": {f: [float(df[f].min()), float(df[f].max())] for f in FEATURES},
+        "label_rules": "Rejected = High; otherwise +1 if cibil < 700, +1 if loan_to_income >= heavy threshold, +2 if >= very heavy threshold (0 Low, 1 Medium, 2+ High)",
     }, f, indent=2)
 
 print("\nTraining complete!")

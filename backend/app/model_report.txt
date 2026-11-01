@@ -1,44 +1,44 @@
 
 Model: Logistic Regression
-Accuracy: 0.8361
+Accuracy: 0.7869
 Classification Report:
               precision    recall  f1-score   support
 
-           0       0.81      0.87      0.84       194
-           1       0.69      0.75      0.72       239
-           2       0.94      0.87      0.90       421
+           0       0.80      0.87      0.83       194
+           1       0.56      0.71      0.62       212
+           2       0.94      0.79      0.86       448
 
-    accuracy                           0.84       854
-   macro avg       0.82      0.83      0.82       854
-weighted avg       0.84      0.84      0.84       854
+    accuracy                           0.79       854
+   macro avg       0.77      0.79      0.77       854
+weighted avg       0.81      0.79      0.79       854
 
 Confusion Matrix:
-[[169  25   0]
- [ 38 179  22]
- [  1  54 366]]
+[[168  26   0]
+ [ 39 150  23]
+ [  2  92 354]]
 ==================================================
 
 Model: Random Forest
-Accuracy: 0.9871
+Accuracy: 0.9813
 Classification Report:
               precision    recall  f1-score   support
 
-           0       0.99      1.00      1.00       194
-           1       1.00      0.96      0.98       239
-           2       0.98      1.00      0.99       421
+           0       1.00      1.00      1.00       194
+           1       0.99      0.94      0.96       212
+           2       0.97      0.99      0.98       448
 
-    accuracy                           0.99       854
-   macro avg       0.99      0.99      0.99       854
-weighted avg       0.99      0.99      0.99       854
+    accuracy                           0.98       854
+   macro avg       0.99      0.98      0.98       854
+weighted avg       0.98      0.98      0.98       854
 
 Confusion Matrix:
 [[194   0   0]
- [  0 230   9]
- [  1   1 419]]
+ [  0 199  13]
+ [  0   3 445]]
 ==================================================
 
 Feature influence (Random Forest):
-{'income': 0.008, 'loan_amount': 0.02, 'loan_to_income': 0.247, 'cibil_score': 0.726}
+{'income': 0.009, 'loan_amount': 0.02, 'loan_to_income': 0.28, 'cibil_score': 0.691}
 
 Best Model: Random Forest
-Best Accuracy: 0.9871
+Best Accuracy: 0.9813

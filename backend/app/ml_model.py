@@ -40,6 +40,15 @@ def _load_meta():
 MODEL_META = _load_meta()
 MODEL_VERSION = f'{MODEL_META["model_name"]} v{MODEL_META["model_version"]}'
 
+# Min/max of each feature seen in training (saved by train_model.py)
+FEATURE_RANGES = MODEL_META.get("feature_ranges", {})
+FEATURE_LABELS = {
+    "income": "annual income",
+    "loan_amount": "loan amount",
+    "loan_to_income": "loan-to-income ratio",
+    "cibil_score": "CIBIL score",
+}
+
 
 def predict_loan_risk(income: float, loan_amount: float, cibil_score: int):
     if income <= 0:
@@ -75,6 +84,18 @@ def predict_loan_risk(income: float, loan_amount: float, cibil_score: int):
 
     if cibil_score < 650 and risk_level != "High Risk":
         recommendation += " A low credit score may still reduce approval chances."
+
+    # The model cannot extrapolate: flag inputs it has never seen anything like
+    outside = [
+        FEATURE_LABELS[name]
+        for name, (low, high) in FEATURE_RANGES.items()
+        if name in FEATURE_LABELS and not (low <= input_data.iloc[0][name] <= high)
+    ]
+    if outside:
+        recommendation += (
+            " Warning: " + ", ".join(outside) + " is outside the range the model was "
+            "trained on, so this result and its confidence are unreliable."
+        )
 
     return {
         "loan_to_income": round(loan_to_income, 2),
